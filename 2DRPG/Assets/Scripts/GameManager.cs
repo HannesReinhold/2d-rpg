@@ -30,13 +30,17 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadSceneAsnyc(string sceneID, int targetID)
     {
+        FadeIn();
+        yield return new WaitForSeconds(0.5f);
+
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneID);
-        FadeOut();
+        
 
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
+        
 
         DoorInteractable[] availableDoors = FindObjectsOfType<DoorInteractable>();
         Debug.Log("FOund " + availableDoors.Length);
@@ -44,7 +48,8 @@ public class GameManager : MonoBehaviour
         {
             if (availableDoors[i].doorID == targetID) TeleportPlayer(availableDoors[i].spawn.position);
         }
-        FadeIn();
+        yield return new WaitForSeconds(0.5f);
+        FadeOut();
     }
 
     public void TeleportPlayer(Vector2 pos)

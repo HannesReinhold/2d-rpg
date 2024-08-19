@@ -7,6 +7,7 @@ public class GUIManager : MonoBehaviour
 {
     public Canvas dialogWindow;
     public TextMeshProUGUI dialogText;
+    public CanvasGroup transitionCanvas;
 
     public bool isVisible;
 
@@ -14,6 +15,7 @@ public class GUIManager : MonoBehaviour
     {
         SetDialogGUI(isVisible);
         DontDestroyOnLoad(gameObject);
+        LeanTween.alphaCanvas(transitionCanvas, 0, 0);
     }
 
     public void SetDialogGUI(bool vis)
@@ -34,11 +36,39 @@ public class GUIManager : MonoBehaviour
 
     public void StartFadeIn()
     {
-
+        //LeanTween.alphaCanvas(transitionCanvas, 1, 0.5f);
+        //transitionCanvas.alpha = 1;
+        StartCoroutine(FadeTransitionCanvas(0.4f, 1));
     }
 
     public void StartFadeOut()
     {
+        //LeanTween.alphaCanvas(transitionCanvas, 0, 0.5f);
+        //transitionCanvas.alpha = 0;
+        StartCoroutine(FadeTransitionCanvas(0.4f,0));
+    }
 
+    private IEnumerator FadeTransitionCanvas(float transitionTimeInSec, float alphaTarget)
+    {
+        float currentAlpha = transitionCanvas.alpha;
+        float currentTime = 0;
+        float t = 0;
+        int numSteps = 8;
+        int i = 0;
+        float tInc = transitionTimeInSec != 0 ? 1f/transitionTimeInSec : 1;
+        while(t<1)
+        {
+            currentTime += Time.deltaTime;
+            i++;
+            if(i>numSteps)
+            {
+                i = 0;
+                t = tInc * currentTime;
+            }
+            Debug.Log(t);
+            transitionCanvas.alpha = Mathf.Lerp(currentAlpha, alphaTarget, t);
+           
+            yield return null;
+        }
     }
 }
