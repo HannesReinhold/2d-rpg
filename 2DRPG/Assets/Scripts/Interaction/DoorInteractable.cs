@@ -37,4 +37,8 @@ public class DoorInteractable : Interactable
     {
         
     }
+
+    public override void EndInteraction()
+    {
+    }
 }

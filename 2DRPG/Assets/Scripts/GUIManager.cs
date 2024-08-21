@@ -9,6 +9,7 @@ public class GUIManager : MonoBehaviour
     public TextMeshProUGUI dialogText;
     public CanvasGroup transitionCanvas;
     public GameObject hintCanvas;
+    public InteractionMenu interactionCanvas;
 
     public bool isVisible;
 
@@ -82,5 +83,16 @@ public class GUIManager : MonoBehaviour
     public void CloseHint()
     {
         hintCanvas.SetActive(false);
+    }
+
+    public void OpenInteractionMenu(Vector3 position)
+    {
+        interactionCanvas.gameObject.SetActive(true);
+        interactionCanvas.transform.position = position;
+    }
+
+    public void CloseInteractionMenu()
+    {
+        interactionCanvas.gameObject.SetActive(false);
     }
 }

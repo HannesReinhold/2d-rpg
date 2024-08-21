@@ -23,6 +23,11 @@ public class NPCController : MonoBehaviour
         
     }
 
+    public void EngageCombat()
+    {
+        GameManager.Instance.combatManager.StartCombat();
+    }
+
     public string GetNextMessage()
     {
         string text = dialogTexts[dialogID];

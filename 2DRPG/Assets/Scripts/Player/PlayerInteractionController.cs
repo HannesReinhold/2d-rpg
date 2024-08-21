@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.SceneManagement;
 
 public class PlayerInteractionController : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PlayerInteractionController : MonoBehaviour
     public PlayerMovement movementController;
 
     private List<Interactable> nearInteractables = new List<Interactable>();
+    private Interactable currentInteraction;
     private bool insideInteractable = false;
 
     public Tilemap interactionTileMap;
@@ -20,6 +22,14 @@ public class PlayerInteractionController : MonoBehaviour
     void Start()
     {
         guiManager = FindAnyObjectByType<GUIManager>();
+        SceneManager.sceneLoaded += CheckForInteractableTilemap;
+        
+    }
+
+    void CheckForInteractableTilemap(Scene scene, LoadSceneMode mode)
+    {
+        GameObject foundTilemap = GameObject.FindGameObjectWithTag("InteractiveTilemap");
+        if(foundTilemap != null) interactionTileMap = foundTilemap.GetComponent<Tilemap>();
     }
 
     // Update is called once per frame
@@ -30,18 +40,24 @@ public class PlayerInteractionController : MonoBehaviour
             TryInteract();
         }
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EndInteraction();
+        }
+
         GroundInteraction();
     }
 
     private void GroundInteraction()
     {
+        if (interactionTileMap == null) return;
         Vector3 playerPos = movementController.transform.position;
         Vector3Int mapPos = interactionTileMap.WorldToCell(playerPos);
 
         if(lastMapPos != mapPos)
         {
             lastMapPos = mapPos;
-            if(insideInteractable && Random.Range(1,100)>95)
+            if(insideInteractable && Random.Range(1,100)>90)
             {
                 GameManager.Instance.guiManager.OpenHint(playerPos + new Vector3(0,1.25f,0));
                 GameManager.Instance.combatManager.StartCombat();
@@ -54,9 +70,21 @@ public class PlayerInteractionController : MonoBehaviour
     {
         Debug.Log("Try Interact");
         if (nearInteractables.Count == 0) return;
-        Interactable  interactable = nearInteractables[0];
-        interactable.Interact(movementController.transform);
-        if (interactable.RemoveAfterInteract) nearInteractables.Remove(interactable);
+        currentInteraction = nearInteractables[0];
+        currentInteraction.Interact(movementController.transform);
+        if (currentInteraction.RemoveAfterInteract)
+        {
+            nearInteractables.Remove(currentInteraction);
+            currentInteraction = null;
+        }
+    }
+
+    private void EndInteraction()
+    {
+
+        Debug.Log("End Interaction");
+        if (currentInteraction == null) return;
+        currentInteraction.EndInteraction();
     }
 
     private bool TryInteractMap()

@@ -10,6 +10,8 @@ public abstract class Interactable : MonoBehaviour
 
     public abstract void Interact(Transform playerTransform);
     public abstract void ResetInteraction();
+
+    public abstract void EndInteraction();
 }
 
 [System.Serializable]

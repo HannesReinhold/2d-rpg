@@ -15,11 +15,11 @@ public class NpcInteractable : Interactable
     public override void Interact(Transform playerTransform)
     {
         FacePlayer(playerTransform.position);
-        
-        GUIManager guiManager = FindAnyObjectByType<GUIManager>();
-        guiManager.SetDialogGUI(true);
-        guiManager.SetDialogText(npcController.GetNextMessage());
-        guiManager.SetDialogGUIPosition(npcController.transform.position);
+
+
+        GameManager.Instance.guiManager.OpenInteractionMenu(transform.position + new Vector3(1.5f,0,0));
+        GameManager.Instance.guiManager.interactionCanvas.npc = this;
+        GameManager.Instance.DisableMovement();
     }
 
     public override void ResetInteraction()
@@ -34,5 +34,48 @@ public class NpcInteractable : Interactable
         npcController.SetDirection(dir);
     }
 
+    public override void EndInteraction()
+    {
+        GameManager.Instance.guiManager.CloseInteractionMenu();
+        GameManager.Instance.EnableMovement();
+        GameManager.Instance.guiManager.interactionCanvas.npc = null;
+    }
+
+    public void Interact(NpcInteractionType type)
+    {
+        switch (type)
+        {
+            case NpcInteractionType.Talk:
+                Talk();
+                break;
+            case NpcInteractionType.Fight:
+                Fight();
+                break;
+            default:
+                EndInteraction();
+                break;
+        }
+    }
+
+    private void Talk()
+    {
+        GUIManager guiManager = FindAnyObjectByType<GUIManager>();
+        guiManager.SetDialogGUI(true);
+        guiManager.SetDialogText(npcController.GetNextMessage());
+        guiManager.SetDialogGUIPosition(npcController.transform.position);
+    }
+
+    private void Fight()
+    {
+        npcController.EngageCombat();
+        GameManager.Instance.guiManager.CloseInteractionMenu();
+    }
+}
+
+public enum NpcInteractionType
+{
+    Talk,
+    Fight,
+    Leave
 
 }
