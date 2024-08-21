@@ -9,10 +9,13 @@ public class PlayerInteractionController : MonoBehaviour
     public PlayerMovement movementController;
 
     private List<Interactable> nearInteractables = new List<Interactable>();
+    private bool insideInteractable = false;
 
     public Tilemap interactionTileMap;
 
     private GUIManager guiManager;
+
+    private Vector3Int lastMapPos;
     
     void Start()
     {
@@ -25,11 +28,26 @@ public class PlayerInteractionController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             TryInteract();
-
-
-            //bool npcInteraction = TryInteractNPC();
-            //if (!npcInteraction) TryInteractMap();
         }
+
+        GroundInteraction();
+    }
+
+    private void GroundInteraction()
+    {
+        Vector3 playerPos = movementController.transform.position;
+        Vector3Int mapPos = interactionTileMap.WorldToCell(playerPos);
+
+        if(lastMapPos != mapPos)
+        {
+            lastMapPos = mapPos;
+            if(insideInteractable && Random.Range(1,100)>95)
+            {
+                GameManager.Instance.guiManager.OpenHint(playerPos + new Vector3(0,1.25f,0));
+                GameManager.Instance.combatManager.StartCombat();
+            }
+        }
+        
     }
 
     private void TryInteract()
@@ -107,6 +125,9 @@ public class PlayerInteractionController : MonoBehaviour
     {
         Interactable interactable = collision.GetComponentInParent<Interactable>();
         if(interactable!=null) nearInteractables.Add(interactable);
+
+        if (collision.GetComponent<TilemapCollider2D>())
+            insideInteractable = true;
     }
 
     private void OnTriggerExit2D(Collider2D collision)
@@ -117,6 +138,8 @@ public class PlayerInteractionController : MonoBehaviour
             nearInteractables.Remove(interactable);
             interactable.ResetInteraction();
         }
+
+        insideInteractable=false;
 
 
         guiManager.SetDialogGUI(false);

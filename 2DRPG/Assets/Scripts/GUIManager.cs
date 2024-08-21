@@ -8,6 +8,7 @@ public class GUIManager : MonoBehaviour
     public Canvas dialogWindow;
     public TextMeshProUGUI dialogText;
     public CanvasGroup transitionCanvas;
+    public GameObject hintCanvas;
 
     public bool isVisible;
 
@@ -70,5 +71,16 @@ public class GUIManager : MonoBehaviour
            
             yield return null;
         }
+    }
+
+    public void OpenHint(Vector3 position)
+    {
+        hintCanvas.SetActive(true);
+        hintCanvas.transform.position = position;
+    }
+
+    public void CloseHint()
+    {
+        hintCanvas.SetActive(false);
     }
 }

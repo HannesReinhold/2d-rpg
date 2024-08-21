@@ -6,7 +6,9 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public GUIManager GuiManager;
+    public GUIManager guiManager;
+    public Player player;
+    public CombatManager combatManager;
 
     private void Awake()
     {
@@ -61,11 +63,21 @@ public class GameManager : MonoBehaviour
 
     public void FadeOut()
     {
-        GuiManager.StartFadeOut();
+        guiManager.StartFadeOut();
     }
 
     public void FadeIn()
     {
-        GuiManager.StartFadeIn();
+        guiManager.StartFadeIn();
+    }
+
+    public void EnableMovement()
+    {
+        player.movement.EnableMovement();
+    }
+
+    public void DisableMovement()
+    {
+        player.movement.DisableMovement();
     }
 }

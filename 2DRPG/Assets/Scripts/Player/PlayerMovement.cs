@@ -21,16 +21,21 @@ public class PlayerMovement : MonoBehaviour
 
     public Vector2 currentDirection;
 
+    private bool canMove = true;
+    private float movementMult = 1;
+
 
 
     // Update is called once per frame
     void FixedUpdate()
     {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveY = Input.GetAxis("Vertical");
+        movementMult = canMove ? 1 : 0;
 
-        float moveXRaw = Input.GetAxisRaw("Horizontal");
-        float moveYRaw = Input.GetAxisRaw("Vertical");
+        float moveX = Input.GetAxis("Horizontal") * movementMult;
+        float moveY = Input.GetAxis("Vertical") * movementMult;
+
+        float moveXRaw = Input.GetAxisRaw("Horizontal") * movementMult;
+        float moveYRaw = Input.GetAxisRaw("Vertical") * movementMult;
 
         // set state
         isMoving = (moveXRaw != 0 || moveYRaw != 0);
@@ -57,6 +62,16 @@ public class PlayerMovement : MonoBehaviour
 
         // controll animator
         playerAnimator.SetState(currentDirection, new Vector2(moveX,moveY).magnitude);
+    }
+
+    public void EnableMovement()
+    {
+        canMove = true;
+    }
+
+    public void DisableMovement()
+    {
+        canMove = false;
     }
 
 
